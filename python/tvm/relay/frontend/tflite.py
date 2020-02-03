@@ -1124,10 +1124,14 @@ class OperatorConverter(object):
             pad_left, pad_right = get_pad_value(input_w, dilated_kernel_w, stride_w)
             do_pad = not (pad_top == 0 and pad_bottom == 0 and pad_left == 0 and pad_right == 0)
             if do_pad:
-                in_expr = _op.nn.pad(data=in_expr, pad_width=((0, 0),
-                                                              (pad_top, pad_bottom),
-                                                              (pad_left, pad_right),
-                                                              (0, 0)))
+                if not input_tensor.qnn_params:
+                    params['padding'] = [pad_top, pad_left, pad_bottom, pad_right]
+                else:
+                    # TODO: we should support asymmetric padding for QNN too.
+                    in_expr = _op.nn.pad(data=in_expr, pad_width=((0, 0),
+                                                                  (pad_top, pad_bottom),
+                                                                  (pad_left, pad_right),
+                                                                  (0, 0)))
         else:
             raise tvm.error.OpAttributeUnImplemented(
                 'Padding format {} is not supported for operator Conv.'.format(padding))

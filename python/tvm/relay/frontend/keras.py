@@ -271,11 +271,7 @@ def _convert_convolution(inexpr, keras_layer, etab):
         in_w = keras_layer.input_shape[2]
         pad_t, pad_b = _get_pad_pair(in_h, dilated_kernel_h, stride_h)
         pad_l, pad_r = _get_pad_pair(in_w, dilated_kernel_w, stride_w)
-        if pad_t == pad_b and pad_l == pad_r:
-            params['padding'] = (pad_t, pad_l)
-        else:
-            inexpr = _op.nn.pad(data=inexpr, pad_width=(
-                (0, 0), (0, 0), (pad_t, pad_b), (pad_l, pad_r)))
+        params['padding'] = (pad_t, pad_l, pad_b, pad_r)
     else:
         msg = 'Padding with {} is not supported for operator Convolution ' \
               'in frontend Keras.'
@@ -319,11 +315,7 @@ def _convert_separable_convolution(inexpr, keras_layer, etab):
         in_w = keras_layer.input_shape[2]
         pad_t, pad_b = _get_pad_pair(in_h, kernel_h, stride_h)
         pad_l, pad_r = _get_pad_pair(in_w, kernel_w, stride_w)
-        if pad_t == pad_b and pad_l == pad_r:
-            params0['padding'] = (pad_t, pad_l)
-        else:
-            inexpr = _op.nn.pad(data=inexpr, pad_width=(
-                (0, 0), (0, 0), (pad_t, pad_b), (pad_l, pad_r)))
+        params0['padding'] = (pad_t, pad_l, pad_b, pad_r)
     else:
         msg = 'Padding with {} is not supported for operator Separable ' \
               'Convolution in frontend Keras.'
